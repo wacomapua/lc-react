@@ -1,12 +1,14 @@
 import '../reset.css';
 import '../App.css';
 import TodoForm from './TodoForm';
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import NoTodos from './NoTodos';
 import TodoList from './TodoList.jsx';
 // import TodoFilters from './TodoFilters';
 
 function App() {
+  const [name, setName] = useState('');
+  const nameInputEl = useRef(null);
   const [todos, setTodos] = useState([
     {
       id: 1,
@@ -92,10 +94,11 @@ function App() {
     setTodos(updatedTodos);
   }
 
-  function remaining() {
+  function remainingCalculation() {
     return todos.filter(todo => !todo.isComplete).length;
   }
 
+  const remaining = useMemo(remainingCalculation, [todos]);
   function clearCompleted() {
     setTodos([...todos].filter(todo => !todo.isComplete));
   }
@@ -119,9 +122,31 @@ function App() {
     }
   }
 
+  useEffect(() => {
+    nameInputEl.current.focus();
+
+    return function cleanup() {};
+  }, []);
+
   return (
     <div className='todo-app-container'>
       <div className='todo-app'>
+        <div className='name-container'>
+          <h2>What is your name?</h2>
+          <button onClick={() => nameInputEl.current.focus()}>Get Ref</button>
+          <form action='#'>
+            <input
+              type='text'
+              ref={nameInputEl}
+              className='todo-input'
+              placeholder='What is your name'
+              value={name}
+              onChange={event => setName(event.target.value)}
+            ></input>
+          </form>
+          {name && <p className='name-label'>Hello, {name}</p>}
+        </div>
+
         <h2>Todo App</h2>
 
         <TodoForm addTodo={addTodo} />
@@ -134,7 +159,7 @@ function App() {
             updateTodo={updateTodo}
             cancelEdit={cancelEdit}
             deleteTodo={deleteTodo}
-            remaining={remaining}
+            remaining={remainingCalculation}
             clearCompleted={clearCompleted}
             completeAllTodos={completeAllTodos}
             todosFiltered={todosFiltered}
