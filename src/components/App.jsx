@@ -6,7 +6,7 @@ import NoTodos from './NoTodos';
 import TodoList from './TodoList.jsx';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { TodosContext } from '../context/TodosContext';
-
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
 function App() {
   const [name, setName] = useLocalStorage('name', '');
   const nameInputEl = useRef(null);
@@ -54,7 +54,6 @@ function App() {
         <div className='todo-app'>
           <div className='name-container'>
             <h2>What is your name?</h2>
-            <button onClick={() => nameInputEl.current.focus()}>Get Ref</button>
             <form action='#'>
               <input
                 type='text'
@@ -65,14 +64,47 @@ function App() {
                 onChange={handleNameInput}
               ></input>
             </form>
-            {name && <p className='name-label'>Hello, {name}</p>}
+            <CSSTransition
+              in={name.length > 0}
+              timeout={300}
+              classNames='slide-vertical'
+              unmountOnExit
+            >
+              <p className='name-label'>Hello, {name}</p>
+            </CSSTransition>
           </div>
 
           <h2>Todo App</h2>
 
           <TodoForm />
+          <SwitchTransition mode='out-in'>
+            <CSSTransition
+              key={todos.length > 0}
+              timeout={300}
+              classNames='slide-vertical'
+              unmountOnExit
+            >
+              {todos.length > 0 ? <TodoList /> : <NoTodos />}
+            </CSSTransition>
+          </SwitchTransition>
 
-          {todos.length > 0 ? <TodoList /> : <NoTodos />}
+          {/* <CSSTransition
+            in={todos.length > 0}
+            timeout={300}
+            classNames='slide-vertical'
+            unmountOnExit
+          >
+            <TodoList />
+          </CSSTransition>
+
+          <CSSTransition
+            in={todos.length === 0}
+            timeout={300}
+            classNames='slide-vertical'
+            unmountOnExit
+          >
+            <NoTodos />
+          </CSSTransition> */}
         </div>
       </div>
     </TodosContext.Provider>
