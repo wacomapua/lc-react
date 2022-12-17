@@ -1,3 +1,4 @@
+import { any } from 'prop-types';
 import React, { useContext, useState } from 'react';
 
 import { TodosContext } from '../context/TodosContext';
@@ -8,7 +9,6 @@ function TodoForm() {
 
   function handleInput(event) {
     setTodoInput(event.target.value);
-    event.target.reset();
   }
 
   function addTodo(event) {
@@ -27,6 +27,7 @@ function TodoForm() {
     ]);
 
     setIdForTodo(prevIdForTodo => prevIdForTodo + 1);
+    setTodoInput('');
   }
 
   return (
